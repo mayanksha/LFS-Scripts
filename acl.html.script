@@ -1,0 +1,7 @@
+./configure --prefix=/usr \
+ --bindir=/bin \
+ --disable-static \
+ --libexecdir=/usr/libmakemake -j1
+ testsmake install install-dev install-lib
+chmod -v 755 /usr/lib/libacl.somv -v /usr/lib/libacl.so.* /lib
+ln -sfv ../../lib/$(readlink /usr/lib/libacl.so) /usr/lib/libacl.so
