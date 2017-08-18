@@ -1,4 +1,4 @@
-export var linksArray : [] = Array.from(["http://linuxfromscratch.org/lfs/view/stable/chapter06/linux-headers.html",
+xport var linksArray : [] = Array.from(["http://linuxfromscratch.org/lfs/view/stable/chapter06/linux-headers.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/man-pages.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/glibc.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/adjusting.html",
@@ -59,6 +59,7 @@ export var linksArray : [] = Array.from(["http://linuxfromscratch.org/lfs/view/s
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/eudev.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/util-linux.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/man-db.html",
+"http://linuxfromscratch.org/lfs/view/stable/chapter06/man-pages.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/tar.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/texinfo.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/vim.html"]);

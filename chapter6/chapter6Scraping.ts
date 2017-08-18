@@ -1,8 +1,18 @@
 var fs = require('fs');
 var jsdom = require("jsdom-no-contextify");
-console.log('Script Started');
+//console.log('Script Started');
 
-var linksArray =  ["http://linuxfromscratch.org/lfs/view/stable/chapter06/linux-headers.html",
+ var tarballData = fs.readFileSync('../tarFolderNames.txt', 'utf-8')
+ tarballData = tarballData.split(/[\n ]+/);
+
+var tarballPaths = [];
+var tarballFolderNames = [];
+for(let i = 0; i < tarballData.length - 1; i+=2){
+		tarballPaths.push(tarballData[i]);
+		tarballFolderNames.push(tarballData[i+1]);
+}
+
+var linksArr : string[] =  ["http://linuxfromscratch.org/lfs/view/stable/chapter06/linux-headers.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/file.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/binutils.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/gmp.html",
@@ -46,6 +56,7 @@ var linksArray =  ["http://linuxfromscratch.org/lfs/view/stable/chapter06/linux-
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/gawk.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/findutils.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/groff.html",
+"http://linuxfromscratch.org/lfs/view/stable/chapter06/zlib.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/grub.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/less.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/gzip.html",
@@ -63,14 +74,42 @@ var linksArray =  ["http://linuxfromscratch.org/lfs/view/stable/chapter06/linux-
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/texinfo.html",
 "http://linuxfromscratch.org/lfs/view/stable/chapter06/vim.html"];
 //var data = fs.readFileSync('./' + , 'utf-8');
-for (let link of linksArray){
-		var doc = jsdom.env(link.toString(), (err, win : Window) => {
-				fs.appendFileSync('./scrip6.sh', `"${link}\n\n`);
+var mainArray = [];
+for (let i = 0; i < linksArr.length; i+=1){
+		var regex = /http:.*chapter06\/(.*)\.html/
+		var t = linksArr[i].replace(regex, "$1");
+		mainArray.push([
+				linksArr[i],
+				tarballFolderNames.find((e) => {
+						if (e.search(new RegExp(`${t}.*`)) === 0)
+								return true;
+						else
+								return false;
+				}),
+				tarballPaths.find((e) => {
+						if (e.search(new RegExp(`/mnt.*${t}.*`)) === 0)
+								return true;
+						else
+								return false;
+				}),
+
+		])
+};
+mainArray[0][1] = 'linux-4.9.9';
+mainArray[0][2] = '/mnt/lfs/sources//linux-4.9.9.tar.xz';
+		
+for (let arr of mainArray){
+		var doc = jsdom.env((arr[0]), (err : any, win : Window) => {
+				fs.appendFileSync('./scrip6.sh', `
+						#-------------->>${arr[1]}<<--------------
+						cd $LFS/sources\n
+						cd ${arr[1]}\n
+						`);
 				if (err) throw err;
 				var nodeList = Array.from(win.document.getElementsByClassName('command'));
 				nodeList.forEach((elem) => {
 						fs.appendFileSync('./scrip6.sh', (elem.nodeName === 'KBD'? elem.textContent.toString() : '\n') + '\n');
-						console.log(elem.nodeName === 'KBD'?elem.textContent : '\n');
+						//console.log(elem.nodeName === 'KBD'?elem.textContent : '\n');
 				});
 		})
 }
