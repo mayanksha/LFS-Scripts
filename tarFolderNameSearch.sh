@@ -15,7 +15,7 @@ for i in ${tarPath[@]}
 do
 		temp=$(tar -tf $i | head -n1 | sed -r 's@/.*@@g' | xargs -n1 -i echo {})
 		tarFolderNames+=("$temp")
-		printf '%s %s \n' "${tarPath[$counter]}" "${tarFolderNames[$counter]}" >> tarFolderNames.txt
+		printf '%s %s \n' "${tarPath[$counter]}" "${tarFolderNames[$counter]}" >> tarFolderNames-8.1-rc2.txt
 		counter=$((counter + 1))
 done
 

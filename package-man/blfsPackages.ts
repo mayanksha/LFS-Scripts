@@ -3,64 +3,46 @@ var jsdom = require('jsdom-no-contextify');
 
 const blfsSourceLink = "http://mirrors-usa.go-parts.com/blfs/8.0/";
 //Array of All the pageLinks
-
 console.log("Script Started. Working!");
-
+const blfsUrl = "http://www.linuxfromscratch.org/blfs/view/stable/index.html"; 
 function pageLinksPromise() : Promise<any> {
 		return new Promise((resolve, reject) => {
-				jsdom.env(blfsSourceLink, (err : Error, win : Window) => {
-						if (err){
-								console.error(err.stack);
+				jsdom.env(blfsUrl, (err : Error, win : Window) => {
+						if(err) 
 								reject(err);
-						} 
-						else {
-								var	doc = win.document;
+						
+						var doc = win.document;
+						var temp = Array.from(doc.getElementsByClassName('sect1')).map((e : any) => {
+					var anchorelems : any	= Array.from(e.childNodes)[1];
+								return anchorelems.href;
+						});
+						resolve(temp);
+				});
 
-								//Converts the returned nodeList to an Array.
-								//Other method, particularly for older browser, is to use Array.prototype.slice.call(arr)
-								var tableData =	Array.from(doc.querySelectorAll('td'));
-
-
-								//Converts every element of the tableData array from a NodeList to a new Array
-								var tempArr = [];
-								tempArr = tableData.map((elem) => Array.from(elem.childNodes));
-
-								//Array of all the pageLinks inside the table (manually remove the first link too which returns to parentDir)
-								var pageLinks = [];
-								tempArr.map((elem) => {
-										if(elem.length === 2)
-												pageLinks.push( elem[0].href );
-								});
-								pageLinks = pageLinks.slice(1,pageLinks.length);
-								resolve(pageLinks);
-						};
-				})
-		})
-};
-
-function tarLinksFunc(pageLinks : string[]) : void {
-		pageLinks.forEach((link) => {
-				jsdom.env(link, (err, win : Window) => {
-						if (err) throw err;
-						else {
-								var doc = win.document;
-								var tarLinks = [];
-								//var rootRegex = \
-								//
-								var anchorNodesArr =	Array.from(doc.querySelectorAll('td')).map((e) =>	e.childNodes);						
-								anchorNodesArr.forEach((e : any) => {
-										if(e[0].nodeName === 'A')
-												console.log(e[0].href);
-								})
-						}
-				})
 		})
 }
 pageLinksPromise()
-		.then((links) => {
-				tarLinksFunc(links);
-		})
-		.catch((err) => {
-				throw err;
-})
+		.then((linksArr) => {
+				linksArr.forEach((link) => {
+						jsdom.env(link, (err : Error, win : Window) => {
 
+								var doc = win.document;
+								var arr = Array.from(doc.getElementsByClassName('compact'))[0];						
+								var temparr = [];
+								if(arr){
+										(Array.from(arr.childNodes).every((e : any) => {
+												if(e.nodeName === 'LI' && e.childNodes[1].nodeName){
+														if(e.childNodes[1].childNodes.length ===3)
+														temparr.push(e.childNodes[1].childNodes[1].href);
+														return false;
+												}				
+												else {
+														return true;
+												}
+										}));
+										console.log(temparr);
+								}
+
+						})
+				})
+});
